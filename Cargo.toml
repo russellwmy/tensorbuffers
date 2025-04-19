@@ -1,0 +1,71 @@
+[package]
+name = "tensorbuffers"
+version = "0.1.0"
+description = "Highly efficient tensor data file format"
+authors = ["Russell Wong"]
+edition = "2021"
+rust-version = "1.86.0"
+homepage = "https://github.com/russellwmy/tensorbuffers"
+repository = "https://github.com/russellwmy/tensorbuffers"
+license = "MIT"
+
+
+[lints.clippy]
+all = { level = "allow", priority = -100 }
+correctness = { level = "deny", priority = -50 }
+suspicious = { level = "deny", priority = -50 }
+perf = { level = "deny", priority = -50 }
+# overrides clippy::perf = "deny": https://github.com/rust-lang/rust-clippy/issues/8111
+single_char_pattern = "allow"
+clone_on_copy = "deny"
+derivable_impls = "deny"
+redundant_clone = "deny"
+len_zero = "deny"
+or_fun_call = "deny"
+unnecessary_lazy_evaluations = "deny"
+
+[lints.rust]
+# Will take effect since Rust 1.80, produces unused warning before it: https://github.com/rust-lang/cargo/pull/13913
+unexpected_cfgs = { level = "allow", check-cfg = ['cfg(enable_const_type_id)'] }
+
+
+[profile.dev]
+panic = 'abort'
+
+[profile.release]
+overflow-checks = true
+panic = 'abort'
+lto = "fat"
+codegen-units = 1
+
+# A much faster to compile version of `release`, for development use.
+[profile.dev-release]
+inherits = "release"
+lto = false
+codegen-units = 16
+debug-assertions = true
+
+# Used for fuzzing, LTO is ill-supported as of 2023-09 and so should not be enabled.
+[profile.fuzz]
+inherits = "dev"
+opt-level = 3
+incremental = false
+codegen-units = 1
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"
+
+[dependencies]
+flatbuffers = { version = "25.2.10" }
+memmap2 = { version = "0.9.5" }
+bytemuck = { version = "1.22.0" }
+
+[dev-dependencies]
+tempfile = { version = "3.19.1" }

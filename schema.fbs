@@ -1,0 +1,32 @@
+namespace TensorBuffers;
+
+enum DataType : byte {
+  NONE, // Placeholder
+  Float32,
+  Float64,
+  Int8,
+  Int16,
+  Int32,
+  Int64,
+  UInt8,
+  UInt16,
+  UInt32,
+  UInt64,
+}
+
+
+table TensorMetadata {
+  id: uint;
+  shape: [uint];
+  data_type: DataType;
+  data_offset: uint;
+  data_size: uint;
+}
+
+table TensorBuffersMetadata {
+    version: string (required);
+    tensors: [TensorMetadata];
+}
+
+
+root_type TensorBuffersMetadata;
