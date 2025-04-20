@@ -63,9 +63,20 @@ inherits = "dev"
 inherits = "dev"
 
 [dependencies]
-flatbuffers = { version = "25.2.10" }
-memmap2 = { version = "0.9.5" }
+bytes = { version = "1.10.1" }
 bytemuck = { version = "1.22.0" }
+futures = { version = "0.3.31" }
+flatbuffers = { version = "25.2.10" }
+fnv = { version = "1.0.7" }
+reqwest = { version = "0.12.15" }
+tokio = { version = "1.44.2", features = [
+    "macros",
+    "rt-multi-thread",
+    "time",
+    "fs",
+] }
+tracing = { version = "0.1.41" }
+
 
 [dev-dependencies]
 tempfile = { version = "3.19.1" }

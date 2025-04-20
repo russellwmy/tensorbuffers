@@ -14,9 +14,9 @@ enum DataType : byte {
   UInt64,
 }
 
-
 table TensorMetadata {
-  id: uint;
+  id: uint64 (key);
+  name: string (required);
   shape: [uint];
   data_type: DataType;
   data_offset: uint;
@@ -25,6 +25,7 @@ table TensorMetadata {
 
 table TensorBuffersMetadata {
     version: string (required);
+    model: string;
     tensors: [TensorMetadata];
 }
 
