@@ -15,3 +15,4 @@ pub use tensor_buffers_file::RemoteFile;
 pub use tensor_buffers_writer::TensorBuffersWriter;
 
 pub type TensorId = u64;
+pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;

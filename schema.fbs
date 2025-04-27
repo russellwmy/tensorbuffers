@@ -1,33 +1,36 @@
 namespace TensorBuffers;
 
-enum DataType : byte {
-  NONE, // Placeholder
-  Float32,
-  Float64,
-  Int8,
-  Int16,
-  Int32,
-  Int64,
-  UInt8,
-  UInt16,
-  UInt32,
-  UInt64,
+// Enum to specify different data types for tensors
+enum DataType: byte {
+  None,       // Placeholder
+  Float32,    // 32-bit floating point
+  Float64,    // 64-bit floating point
+  Int8,       // 8-bit signed integer
+  Int16,      // 16-bit signed integer
+  Int32,      // 32-bit signed integer
+  Int64,      // 64-bit signed integer
+  UInt8,      // 8-bit unsigned integer
+  UInt16,     // 16-bit unsigned integer
+  UInt32,     // 32-bit unsigned integer
+  UInt64,     // 64-bit unsigned integer
 }
 
+// TensorMetadata holds all information about a tensor
 table TensorMetadata {
-  id: uint64 (key);
-  name: string (required);
-  shape: [uint];
-  data_type: DataType;
-  data_offset: uint;
-  data_size: uint;
+  id: uint64 (key);       // Unique identifier for the tensor
+  name: string (required); // Name of the tensor
+  shape: [uint];          // Shape of the tensor (e.g., [2, 3, 4])
+  data_type: DataType;    // Data type of the tensor
+  data_offset: uint;      // Offset for the data in memory
+  data_size: uint;        // Size of the data in bytes
 }
 
+// TensorBuffersMetadata holds metadata about the model, version, tensors, and operations
 table TensorBuffersMetadata {
-    version: string (required);
-    model: string;
-    tensors: [TensorMetadata];
+  version: string (required);     // Version of the schema
+  model: string;                  // Model name or description
+  tensors: [TensorMetadata];      // List of tensors in the model
 }
 
-
+// The root table that holds the metadata
 root_type TensorBuffersMetadata;

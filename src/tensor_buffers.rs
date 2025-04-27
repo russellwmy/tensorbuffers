@@ -1,20 +1,19 @@
-use std::{error::Error, mem::size_of, sync::Mutex};
+use std::{mem::size_of, sync::Mutex};
 
 use bytemuck::Pod;
 use bytes::BytesMut;
+use flatbuffers::{FlatBufferBuilder, WIPOffset};
 use tokio::sync::OnceCell;
 
 use crate::{
-    generated::tensor_buffers::{TensorBuffersMetadata, TensorMetadata},
+    constants::VERSION,
+    generated::tensor_buffers::{TensorBuffersMetadata, TensorBuffersMetadataArgs, TensorMetadata},
     num_trait::Num,
     tensor_buffers_file::TensorBuffersFile,
     tensor_buffers_reader::{TensorBuffersRead, TensorBuffersReader},
     utils::hash_key,
-    Tensor, TensorId,
+    Result, Tensor, TensorId,
 };
-
-type Result<T> = std::result::Result<T, Box<dyn Error>>;
-
 /// A struct to represent a collection of tensors stored in a memory-mapped file.
 /// This struct provides methods to read tensor metadata and data from the file.
 pub struct TensorBuffers<'a> {
@@ -92,8 +91,9 @@ impl<'a> TensorBuffers<'a> {
             );
         }
 
-        let mut data_buf = BytesMut::with_capacity(size);
-        self.reader.lock().unwrap().read_data_with_metadata(tensor_metadata, &mut data_buf).await?;
+        let mut buf = BytesMut::new();
+        buf.resize(size, 0);
+        self.reader.lock().unwrap().read_data_with_metadata(tensor_metadata, &mut buf).await?;
 
         if size % size_of::<T>() != 0 {
             return Err(format!(
@@ -103,22 +103,30 @@ impl<'a> TensorBuffers<'a> {
             )
             .into());
         }
-        let owned_buf: Box<[u8]> = data_buf.to_vec().into_boxed_slice();
-        let leaked_buf: &'a [u8] = Box::leak(owned_buf);
-        let data = bytemuck::cast_slice::<u8, T>(leaked_buf);
-        let name = tensor_metadata.name();
-        let shape = tensor_metadata
-            .shape()
-            .ok_or("Failed to get tensor shape from metadata")?
-            .iter()
-            .map(|dim| dim as usize)
-            .collect::<Vec<_>>();
-        Ok(Tensor::new(name, data, shape))
+
+        Tensor::new_with_metadata_and_data(tensor_metadata, buf.to_vec())
+    }
+}
+
+impl<'a> TensorBuffers<'a> {
+    pub fn build_table(
+        builder: &mut FlatBufferBuilder<'a>,
+        tensor_metadata_offsets: &[WIPOffset<TensorMetadata<'a>>],
+    ) -> WIPOffset<TensorBuffersMetadata<'a>> {
+        // Create FlatBuffers metadata for the file.
+        let version_offset = builder.create_string(VERSION);
+        let tensors_offset = builder.create_vector(&tensor_metadata_offsets);
+        TensorBuffersMetadata::create(builder, &TensorBuffersMetadataArgs {
+            version: Some(version_offset),
+            tensors: Some(tensors_offset),
+            ..Default::default()
+        })
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use bytemuck::cast_slice;
     use tempfile::NamedTempFile;
     use tokio::fs::File;
 
@@ -159,7 +167,7 @@ mod tests {
         let mut tensor_buf = vec![0; tensor_metadata.data_size() as usize];
         reader.read_data_with_metadata(tensor_metadata, &mut tensor_buf).await.unwrap();
         assert_eq!(tensor_buf.len(), 3 * std::mem::size_of::<f32>());
-        let tensor_data = bytemuck::cast_slice::<u8, f32>(&tensor_buf);
+        let tensor_data = cast_slice::<u8, f32>(&tensor_buf);
         assert_eq!(tensor_data, &[1.0f32, 2.0, 3.0]);
     }
 }

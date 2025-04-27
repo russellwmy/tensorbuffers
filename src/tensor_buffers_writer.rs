@@ -6,10 +6,8 @@ use tokio::io::{AsyncSeek, AsyncWrite, AsyncWriteExt};
 
 use crate::{
     constants::{MAGIC_BYTES, VERSION},
-    generated::tensor_buffers::{
-        TensorBuffersMetadata, TensorBuffersMetadataArgs, TensorMetadata, TensorMetadataArgs,
-    },
-    Num, Tensor,
+    generated::tensor_buffers::{TensorBuffersMetadata, TensorBuffersMetadataArgs},
+    Num, Tensor, TensorBuffers,
 };
 
 // Define a trait for writing tensors to a destination.
@@ -86,41 +84,19 @@ where
             current_offset += data_size as u64;
         }
 
-        // Build FlatBuffers metadata for all tensors.
         let mut builder = FlatBufferBuilder::new();
+
+        // Build FlatBuffers metadata for all tensors.
         let mut tensor_metadata_offsets = Vec::with_capacity(tensor_vec.len());
 
         for (i, t) in tensor_vec.iter().enumerate() {
-            // Convert shape to u32 for FlatBuffers.
-            let shape = t.shape().iter().map(|&dim| dim as u32).collect::<Vec<u32>>();
-            let shape_offset = builder.create_vector::<u32>(&shape);
-            let data_type = t.data_type();
-            let data_bytes = bytemuck::cast_slice::<T, u8>(t.data());
-            let name = builder.create_string(t.name());
-
             // Create FlatBuffers metadata for this tensor.
-            let tensor_metadata = TensorMetadata::create(&mut builder, &TensorMetadataArgs {
-                id: t.id(),
-                name: Some(name),
-                data_type: data_type.into(),
-                data_offset: data_offsets[i],
-                data_size: data_bytes.len() as u32,
-                shape: Some(shape_offset),
-                ..Default::default()
-            });
+            let tensor_metadata = Tensor::build_table(&mut builder, &t, data_offsets[i] as usize);
             tensor_metadata_offsets.push(tensor_metadata);
         }
-
-        // Create FlatBuffers metadata for the file.
-        let version_offset = builder.create_string(VERSION);
-        let tensors_offset = builder.create_vector(&tensor_metadata_offsets);
-        let tensor_store_metadata =
-            TensorBuffersMetadata::create(&mut builder, &TensorBuffersMetadataArgs {
-                version: Some(version_offset),
-                tensors: Some(tensors_offset),
-                ..Default::default()
-            });
-        builder.finish(tensor_store_metadata, None);
+        let tensor_buffers_metadata =
+            TensorBuffers::build_table(&mut builder, &&tensor_metadata_offsets);
+        builder.finish(tensor_buffers_metadata, None);
 
         // Write FlatBuffers metadata to the writer.
         let flatbuffer_data = builder.finished_data();
