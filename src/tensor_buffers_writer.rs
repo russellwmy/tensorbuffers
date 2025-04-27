@@ -4,11 +4,7 @@ use bytemuck::Pod;
 use flatbuffers::FlatBufferBuilder;
 use tokio::io::{AsyncSeek, AsyncWrite, AsyncWriteExt};
 
-use crate::{
-    constants::{MAGIC_BYTES, VERSION},
-    generated::tensor_buffers::{TensorBuffersMetadata, TensorBuffersMetadataArgs},
-    Num, Tensor, TensorBuffers,
-};
+use crate::{constants::MAGIC_BYTES, Num, Tensor, TensorBuffers, TensorOperation};
 
 // Define a trait for writing tensors to a destination.
 // This trait abstracts the logic for serializing and writing tensors.
@@ -20,9 +16,10 @@ pub trait TensorBuffersWrite {
     ///
     /// # Returns
     /// Returns `Ok(())` on success, or a `Box<dyn Error>` on failure.
-    async fn write_tensors<'a, T>(
+    async fn write<'a, T>(
         &mut self,
-        tensors: impl IntoIterator<Item = Tensor<'a, T>>,
+        tensors: Vec<Tensor<'a, T>>,
+        operations: Vec<TensorOperation>,
     ) -> Result<()>
     where
         T: Pod + Num; // T must be plain old data and implement the custom Num trait.
@@ -56,9 +53,10 @@ where
 {
     /// Serializes and writes tensors to the underlying writer in a custom format.
     /// The format: magic bytes | tensor data | FlatBuffers metadata | metadata size | magic bytes.
-    async fn write_tensors<'a, T>(
+    async fn write<'a, T>(
         &mut self,
-        tensors: impl IntoIterator<Item = Tensor<'a, T>>,
+        tensors: Vec<Tensor<'a, T>>,
+        operations: Vec<TensorOperation>,
     ) -> Result<()>
     where
         T: Pod + Num,
@@ -66,16 +64,13 @@ where
         // Write the initial magic bytes to identify the file format.
         self.writer.write_all(MAGIC_BYTES).await?;
 
-        // Collect tensors into a Vec for multiple passes (offsets, data, metadata).
-        let tensor_vec: Vec<_> = tensors.into_iter().collect();
-
         // Track the starting offset for each tensor's data.
-        let mut data_offsets = Vec::with_capacity(tensor_vec.len());
+        let mut data_offsets = Vec::with_capacity(tensors.len());
         // Offset starts after the magic bytes.
         let mut current_offset = 4u64;
 
         // Write each tensor's data and record its offset.
-        for t in tensor_vec.iter() {
+        for t in tensors.iter() {
             data_offsets.push(current_offset as u32);
             // Convert tensor data to bytes.
             let data_bytes = bytemuck::cast_slice::<T, u8>(t.data());
@@ -87,15 +82,27 @@ where
         let mut builder = FlatBufferBuilder::new();
 
         // Build FlatBuffers metadata for all tensors.
-        let mut tensor_metadata_offsets = Vec::with_capacity(tensor_vec.len());
+        let mut tensor_metadata_offsets = Vec::with_capacity(tensors.len());
 
-        for (i, t) in tensor_vec.iter().enumerate() {
+        for (i, t) in tensors.iter().enumerate() {
             // Create FlatBuffers metadata for this tensor.
             let tensor_metadata = Tensor::build_table(&mut builder, &t, data_offsets[i] as usize);
             tensor_metadata_offsets.push(tensor_metadata);
         }
-        let tensor_buffers_metadata =
-            TensorBuffers::build_table(&mut builder, &&tensor_metadata_offsets);
+
+        let mut operations_metadata_offsets = Vec::with_capacity(operations.len());
+        // Write the operations to the writer.
+        for op in operations {
+            // Serialize and write the operation.
+            let operation_metadata = TensorOperation::build_table(&mut builder, op);
+            operations_metadata_offsets.push(operation_metadata);
+        }
+
+        let tensor_buffers_metadata = TensorBuffers::build_table(
+            &mut builder,
+            &tensor_metadata_offsets,
+            &operations_metadata_offsets,
+        );
         builder.finish(tensor_buffers_metadata, None);
 
         // Write FlatBuffers metadata to the writer.
@@ -138,7 +145,7 @@ mod tests {
 
         // Write tensors to the file.
         let mut writer = TensorBuffersWriter::new(&mut file);
-        writer.write_tensors(vec![tensor1, tensor2]).await.unwrap();
+        writer.write(vec![tensor1, tensor2], vec![]).await.unwrap();
 
         // Seek to the start and verify file is not empty.
         file.seek(SeekFrom::Start(0)).await.unwrap();

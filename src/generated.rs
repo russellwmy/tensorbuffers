@@ -139,6 +139,231 @@ impl<'a> flatbuffers::Verifiable for DataType {
 }
 
 impl flatbuffers::SimpleToVerifyInSlice for DataType {}
+#[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
+pub const ENUM_MIN_OPERATION: i8 = 0;
+#[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
+pub const ENUM_MAX_OPERATION: i8 = 36;
+#[deprecated(since = "2.0.0", note = "Use associated constants instead. This will no longer be generated in 2021.")]
+#[allow(non_camel_case_types)]
+pub const ENUM_VALUES_OPERATION: [Operation; 37] = [
+  Operation::None,
+  Operation::Add,
+  Operation::Sub,
+  Operation::Mul,
+  Operation::Div,
+  Operation::Sqr,
+  Operation::Sqrt,
+  Operation::Sum,
+  Operation::Mean,
+  Operation::Argmax,
+  Operation::Sigmoid,
+  Operation::Tanh,
+  Operation::ReLU,
+  Operation::LeakyReLU,
+  Operation::Softmax,
+  Operation::MatMul,
+  Operation::Concat,
+  Operation::Transpose,
+  Operation::Flatten,
+  Operation::Reshape,
+  Operation::BatchNorm,
+  Operation::Dropout,
+  Operation::MaxPool,
+  Operation::AvgPool,
+  Operation::Conv2D,
+  Operation::FC,
+  Operation::Softplus,
+  Operation::Log,
+  Operation::Exp,
+  Operation::Abs,
+  Operation::Pow,
+  Operation::CrossEntropyLoss,
+  Operation::MSELoss,
+  Operation::L1Loss,
+  Operation::Adam,
+  Operation::SGD,
+  Operation::RMSProp,
+];
+
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+#[repr(transparent)]
+pub struct Operation(pub i8);
+#[allow(non_upper_case_globals)]
+impl Operation {
+  pub const None: Self = Self(0);
+  pub const Add: Self = Self(1);
+  pub const Sub: Self = Self(2);
+  pub const Mul: Self = Self(3);
+  pub const Div: Self = Self(4);
+  pub const Sqr: Self = Self(5);
+  pub const Sqrt: Self = Self(6);
+  pub const Sum: Self = Self(7);
+  pub const Mean: Self = Self(8);
+  pub const Argmax: Self = Self(9);
+  pub const Sigmoid: Self = Self(10);
+  pub const Tanh: Self = Self(11);
+  pub const ReLU: Self = Self(12);
+  pub const LeakyReLU: Self = Self(13);
+  pub const Softmax: Self = Self(14);
+  pub const MatMul: Self = Self(15);
+  pub const Concat: Self = Self(16);
+  pub const Transpose: Self = Self(17);
+  pub const Flatten: Self = Self(18);
+  pub const Reshape: Self = Self(19);
+  pub const BatchNorm: Self = Self(20);
+  pub const Dropout: Self = Self(21);
+  pub const MaxPool: Self = Self(22);
+  pub const AvgPool: Self = Self(23);
+  pub const Conv2D: Self = Self(24);
+  pub const FC: Self = Self(25);
+  pub const Softplus: Self = Self(26);
+  pub const Log: Self = Self(27);
+  pub const Exp: Self = Self(28);
+  pub const Abs: Self = Self(29);
+  pub const Pow: Self = Self(30);
+  pub const CrossEntropyLoss: Self = Self(31);
+  pub const MSELoss: Self = Self(32);
+  pub const L1Loss: Self = Self(33);
+  pub const Adam: Self = Self(34);
+  pub const SGD: Self = Self(35);
+  pub const RMSProp: Self = Self(36);
+
+  pub const ENUM_MIN: i8 = 0;
+  pub const ENUM_MAX: i8 = 36;
+  pub const ENUM_VALUES: &'static [Self] = &[
+    Self::None,
+    Self::Add,
+    Self::Sub,
+    Self::Mul,
+    Self::Div,
+    Self::Sqr,
+    Self::Sqrt,
+    Self::Sum,
+    Self::Mean,
+    Self::Argmax,
+    Self::Sigmoid,
+    Self::Tanh,
+    Self::ReLU,
+    Self::LeakyReLU,
+    Self::Softmax,
+    Self::MatMul,
+    Self::Concat,
+    Self::Transpose,
+    Self::Flatten,
+    Self::Reshape,
+    Self::BatchNorm,
+    Self::Dropout,
+    Self::MaxPool,
+    Self::AvgPool,
+    Self::Conv2D,
+    Self::FC,
+    Self::Softplus,
+    Self::Log,
+    Self::Exp,
+    Self::Abs,
+    Self::Pow,
+    Self::CrossEntropyLoss,
+    Self::MSELoss,
+    Self::L1Loss,
+    Self::Adam,
+    Self::SGD,
+    Self::RMSProp,
+  ];
+  /// Returns the variant's name or "" if unknown.
+  pub fn variant_name(self) -> Option<&'static str> {
+    match self {
+      Self::None => Some("None"),
+      Self::Add => Some("Add"),
+      Self::Sub => Some("Sub"),
+      Self::Mul => Some("Mul"),
+      Self::Div => Some("Div"),
+      Self::Sqr => Some("Sqr"),
+      Self::Sqrt => Some("Sqrt"),
+      Self::Sum => Some("Sum"),
+      Self::Mean => Some("Mean"),
+      Self::Argmax => Some("Argmax"),
+      Self::Sigmoid => Some("Sigmoid"),
+      Self::Tanh => Some("Tanh"),
+      Self::ReLU => Some("ReLU"),
+      Self::LeakyReLU => Some("LeakyReLU"),
+      Self::Softmax => Some("Softmax"),
+      Self::MatMul => Some("MatMul"),
+      Self::Concat => Some("Concat"),
+      Self::Transpose => Some("Transpose"),
+      Self::Flatten => Some("Flatten"),
+      Self::Reshape => Some("Reshape"),
+      Self::BatchNorm => Some("BatchNorm"),
+      Self::Dropout => Some("Dropout"),
+      Self::MaxPool => Some("MaxPool"),
+      Self::AvgPool => Some("AvgPool"),
+      Self::Conv2D => Some("Conv2D"),
+      Self::FC => Some("FC"),
+      Self::Softplus => Some("Softplus"),
+      Self::Log => Some("Log"),
+      Self::Exp => Some("Exp"),
+      Self::Abs => Some("Abs"),
+      Self::Pow => Some("Pow"),
+      Self::CrossEntropyLoss => Some("CrossEntropyLoss"),
+      Self::MSELoss => Some("MSELoss"),
+      Self::L1Loss => Some("L1Loss"),
+      Self::Adam => Some("Adam"),
+      Self::SGD => Some("SGD"),
+      Self::RMSProp => Some("RMSProp"),
+      _ => None,
+    }
+  }
+}
+impl core::fmt::Debug for Operation {
+  fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+    if let Some(name) = self.variant_name() {
+      f.write_str(name)
+    } else {
+      f.write_fmt(format_args!("<UNKNOWN {:?}>", self.0))
+    }
+  }
+}
+impl<'a> flatbuffers::Follow<'a> for Operation {
+  type Inner = Self;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    let b = flatbuffers::read_scalar_at::<i8>(buf, loc);
+    Self(b)
+  }
+}
+
+impl flatbuffers::Push for Operation {
+    type Output = Operation;
+    #[inline]
+    unsafe fn push(&self, dst: &mut [u8], _written_len: usize) {
+        flatbuffers::emplace_scalar::<i8>(dst, self.0);
+    }
+}
+
+impl flatbuffers::EndianScalar for Operation {
+  type Scalar = i8;
+  #[inline]
+  fn to_little_endian(self) -> i8 {
+    self.0.to_le()
+  }
+  #[inline]
+  #[allow(clippy::wrong_self_convention)]
+  fn from_little_endian(v: i8) -> Self {
+    let b = i8::from_le(v);
+    Self(b)
+  }
+}
+
+impl<'a> flatbuffers::Verifiable for Operation {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    i8::run_verifier(v, pos)
+  }
+}
+
+impl flatbuffers::SimpleToVerifyInSlice for Operation {}
 pub enum TensorMetadataOffset {}
 #[derive(Copy, Clone, PartialEq)]
 
@@ -332,6 +557,164 @@ impl core::fmt::Debug for TensorMetadata<'_> {
       ds.finish()
   }
 }
+pub enum OperationMetadataOffset {}
+#[derive(Copy, Clone, PartialEq)]
+
+pub struct OperationMetadata<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for OperationMetadata<'a> {
+  type Inner = OperationMetadata<'a>;
+  #[inline]
+  unsafe fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+    Self { _tab: flatbuffers::Table::new(buf, loc) }
+  }
+}
+
+impl<'a> OperationMetadata<'a> {
+  pub const VT_ID: flatbuffers::VOffsetT = 4;
+  pub const VT_OPERATION: flatbuffers::VOffsetT = 6;
+  pub const VT_OUTPUT: flatbuffers::VOffsetT = 8;
+  pub const VT_INPUT_OPERATIONS: flatbuffers::VOffsetT = 10;
+
+  #[inline]
+  pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+    OperationMetadata { _tab: table }
+  }
+  #[allow(unused_mut)]
+  pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr, A: flatbuffers::Allocator + 'bldr>(
+    _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr, A>,
+    args: &'args OperationMetadataArgs<'args>
+  ) -> flatbuffers::WIPOffset<OperationMetadata<'bldr>> {
+    let mut builder = OperationMetadataBuilder::new(_fbb);
+    builder.add_output(args.output);
+    builder.add_id(args.id);
+    if let Some(x) = args.input_operations { builder.add_input_operations(x); }
+    builder.add_operation(args.operation);
+    builder.finish()
+  }
+
+
+  #[inline]
+  pub fn id(&self) -> u64 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<u64>(OperationMetadata::VT_ID, Some(0)).unwrap()}
+  }
+  #[inline]
+  pub fn key_compare_less_than(&self, o: &OperationMetadata) -> bool {
+    self.id() < o.id()
+  }
+
+  #[inline]
+  pub fn key_compare_with_value(&self, val: u64) -> ::core::cmp::Ordering {
+    let key = self.id();
+    key.cmp(&val)
+  }
+  #[inline]
+  pub fn operation(&self) -> Operation {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<Operation>(OperationMetadata::VT_OPERATION, Some(Operation::None)).unwrap()}
+  }
+  #[inline]
+  pub fn output(&self) -> u64 {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<u64>(OperationMetadata::VT_OUTPUT, Some(0)).unwrap()}
+  }
+  #[inline]
+  pub fn input_operations(&self) -> Option<flatbuffers::Vector<'a, u64>> {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, u64>>>(OperationMetadata::VT_INPUT_OPERATIONS, None)}
+  }
+}
+
+impl flatbuffers::Verifiable for OperationMetadata<'_> {
+  #[inline]
+  fn run_verifier(
+    v: &mut flatbuffers::Verifier, pos: usize
+  ) -> Result<(), flatbuffers::InvalidFlatbuffer> {
+    use self::flatbuffers::Verifiable;
+    v.visit_table(pos)?
+     .visit_field::<u64>("id", Self::VT_ID, false)?
+     .visit_field::<Operation>("operation", Self::VT_OPERATION, false)?
+     .visit_field::<u64>("output", Self::VT_OUTPUT, false)?
+     .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, u64>>>("input_operations", Self::VT_INPUT_OPERATIONS, false)?
+     .finish();
+    Ok(())
+  }
+}
+pub struct OperationMetadataArgs<'a> {
+    pub id: u64,
+    pub operation: Operation,
+    pub output: u64,
+    pub input_operations: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, u64>>>,
+}
+impl<'a> Default for OperationMetadataArgs<'a> {
+  #[inline]
+  fn default() -> Self {
+    OperationMetadataArgs {
+      id: 0,
+      operation: Operation::None,
+      output: 0,
+      input_operations: None,
+    }
+  }
+}
+
+pub struct OperationMetadataBuilder<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a, A>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> OperationMetadataBuilder<'a, 'b, A> {
+  #[inline]
+  pub fn add_id(&mut self, id: u64) {
+    self.fbb_.push_slot::<u64>(OperationMetadata::VT_ID, id, 0);
+  }
+  #[inline]
+  pub fn add_operation(&mut self, operation: Operation) {
+    self.fbb_.push_slot::<Operation>(OperationMetadata::VT_OPERATION, operation, Operation::None);
+  }
+  #[inline]
+  pub fn add_output(&mut self, output: u64) {
+    self.fbb_.push_slot::<u64>(OperationMetadata::VT_OUTPUT, output, 0);
+  }
+  #[inline]
+  pub fn add_input_operations(&mut self, input_operations: flatbuffers::WIPOffset<flatbuffers::Vector<'b , u64>>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(OperationMetadata::VT_INPUT_OPERATIONS, input_operations);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> OperationMetadataBuilder<'a, 'b, A> {
+    let start = _fbb.start_table();
+    OperationMetadataBuilder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<OperationMetadata<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+impl core::fmt::Debug for OperationMetadata<'_> {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    let mut ds = f.debug_struct("OperationMetadata");
+      ds.field("id", &self.id());
+      ds.field("operation", &self.operation());
+      ds.field("output", &self.output());
+      ds.field("input_operations", &self.input_operations());
+      ds.finish()
+  }
+}
 pub enum TensorBuffersMetadataOffset {}
 #[derive(Copy, Clone, PartialEq)]
 
@@ -351,6 +734,7 @@ impl<'a> TensorBuffersMetadata<'a> {
   pub const VT_VERSION: flatbuffers::VOffsetT = 4;
   pub const VT_MODEL: flatbuffers::VOffsetT = 6;
   pub const VT_TENSORS: flatbuffers::VOffsetT = 8;
+  pub const VT_OPERATIONS: flatbuffers::VOffsetT = 10;
 
   #[inline]
   pub unsafe fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
@@ -362,6 +746,7 @@ impl<'a> TensorBuffersMetadata<'a> {
     args: &'args TensorBuffersMetadataArgs<'args>
   ) -> flatbuffers::WIPOffset<TensorBuffersMetadata<'bldr>> {
     let mut builder = TensorBuffersMetadataBuilder::new(_fbb);
+    if let Some(x) = args.operations { builder.add_operations(x); }
     if let Some(x) = args.tensors { builder.add_tensors(x); }
     if let Some(x) = args.model { builder.add_model(x); }
     if let Some(x) = args.version { builder.add_version(x); }
@@ -390,6 +775,13 @@ impl<'a> TensorBuffersMetadata<'a> {
     // which contains a valid value in this slot
     unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<TensorMetadata>>>>(TensorBuffersMetadata::VT_TENSORS, None)}
   }
+  #[inline]
+  pub fn operations(&self) -> Option<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<OperationMetadata<'a>>>> {
+    // Safety:
+    // Created from valid Table for this object
+    // which contains a valid value in this slot
+    unsafe { self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<OperationMetadata>>>>(TensorBuffersMetadata::VT_OPERATIONS, None)}
+  }
 }
 
 impl flatbuffers::Verifiable for TensorBuffersMetadata<'_> {
@@ -402,6 +794,7 @@ impl flatbuffers::Verifiable for TensorBuffersMetadata<'_> {
      .visit_field::<flatbuffers::ForwardsUOffset<&str>>("version", Self::VT_VERSION, true)?
      .visit_field::<flatbuffers::ForwardsUOffset<&str>>("model", Self::VT_MODEL, false)?
      .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, flatbuffers::ForwardsUOffset<TensorMetadata>>>>("tensors", Self::VT_TENSORS, false)?
+     .visit_field::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<'_, flatbuffers::ForwardsUOffset<OperationMetadata>>>>("operations", Self::VT_OPERATIONS, false)?
      .finish();
     Ok(())
   }
@@ -410,6 +803,7 @@ pub struct TensorBuffersMetadataArgs<'a> {
     pub version: Option<flatbuffers::WIPOffset<&'a str>>,
     pub model: Option<flatbuffers::WIPOffset<&'a str>>,
     pub tensors: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<TensorMetadata<'a>>>>>,
+    pub operations: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a, flatbuffers::ForwardsUOffset<OperationMetadata<'a>>>>>,
 }
 impl<'a> Default for TensorBuffersMetadataArgs<'a> {
   #[inline]
@@ -418,6 +812,7 @@ impl<'a> Default for TensorBuffersMetadataArgs<'a> {
       version: None, // required field
       model: None,
       tensors: None,
+      operations: None,
     }
   }
 }
@@ -438,6 +833,10 @@ impl<'a: 'b, 'b, A: flatbuffers::Allocator + 'a> TensorBuffersMetadataBuilder<'a
   #[inline]
   pub fn add_tensors(&mut self, tensors: flatbuffers::WIPOffset<flatbuffers::Vector<'b , flatbuffers::ForwardsUOffset<TensorMetadata<'b >>>>) {
     self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(TensorBuffersMetadata::VT_TENSORS, tensors);
+  }
+  #[inline]
+  pub fn add_operations(&mut self, operations: flatbuffers::WIPOffset<flatbuffers::Vector<'b , flatbuffers::ForwardsUOffset<OperationMetadata<'b >>>>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(TensorBuffersMetadata::VT_OPERATIONS, operations);
   }
   #[inline]
   pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a, A>) -> TensorBuffersMetadataBuilder<'a, 'b, A> {
@@ -461,6 +860,7 @@ impl core::fmt::Debug for TensorBuffersMetadata<'_> {
       ds.field("version", &self.version());
       ds.field("model", &self.model());
       ds.field("tensors", &self.tensors());
+      ds.field("operations", &self.operations());
       ds.finish()
   }
 }

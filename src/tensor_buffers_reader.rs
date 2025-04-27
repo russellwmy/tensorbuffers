@@ -150,7 +150,7 @@ mod tests {
 
         // Write the tensor to the buffer.
         let mut writer = TensorBuffersWriter::new(&mut file);
-        writer.write_tensors(vec![tensor]).await.unwrap();
+        writer.write(vec![tensor], vec![]).await.unwrap();
 
         // Reset file position for reading.
         let file = File::open(&path).await.unwrap();
@@ -172,6 +172,6 @@ mod tests {
         let tensor_metadata = tensor_buffers_metadata.tensors().unwrap().get(0);
         let mut tensor_buf = vec![0; tensor_metadata.data_size() as usize];
         reader.read_data_with_metadata(tensor_metadata, &mut tensor_buf).await.unwrap();
-        assert_eq!(tensor_buf.len(), 3 * std::mem::size_of::<f32>());
+        assert_eq!(tensor_buf.len(), 3 * size_of::<f32>());
     }
 }

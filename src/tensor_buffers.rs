@@ -7,12 +7,15 @@ use tokio::sync::OnceCell;
 
 use crate::{
     constants::VERSION,
-    generated::tensor_buffers::{TensorBuffersMetadata, TensorBuffersMetadataArgs, TensorMetadata},
+    generated::tensor_buffers::{
+        OperationMetadata, TensorBuffersMetadata, TensorBuffersMetadataArgs, TensorMetadata,
+    },
     num_trait::Num,
     tensor_buffers_file::TensorBuffersFile,
     tensor_buffers_reader::{TensorBuffersRead, TensorBuffersReader},
+    tensor_operation,
     utils::hash_key,
-    Result, Tensor, TensorId,
+    Result, Tensor, TensorId, TensorOperation, TensorOperationId,
 };
 /// A struct to represent a collection of tensors stored in a memory-mapped file.
 /// This struct provides methods to read tensor metadata and data from the file.
@@ -56,6 +59,18 @@ impl<'a> TensorBuffers<'a> {
             .lookup_by_key(tensor_id, |field, key| field.key_compare_with_value(*key))
             .ok_or("Tensor ID not found in metadata")?;
         Ok(result)
+    }
+
+    pub async fn get_tensor_operation_by_id(
+        &self,
+        operation_id: TensorOperationId,
+    ) -> Result<TensorOperation> {
+        let metadata_root = self.get_metadata_root().await?;
+        let operations = metadata_root.operations().ok_or("No operations found")?;
+        let result = operations
+            .lookup_by_key(operation_id, |field, key| field.key_compare_with_value(*key))
+            .ok_or("Operation ID not found in metadata")?;
+        Ok(TensorOperation::with_metadata(&result))
     }
 
     pub async fn get_tensor_data_by_name<T>(&self, tensor_name: &str) -> Result<Tensor<T>>
@@ -112,13 +127,16 @@ impl<'a> TensorBuffers<'a> {
     pub fn build_table(
         builder: &mut FlatBufferBuilder<'a>,
         tensor_metadata_offsets: &[WIPOffset<TensorMetadata<'a>>],
+        tensor_operation_offsets: &[WIPOffset<OperationMetadata<'a>>],
     ) -> WIPOffset<TensorBuffersMetadata<'a>> {
         // Create FlatBuffers metadata for the file.
         let version_offset = builder.create_string(VERSION);
         let tensors_offset = builder.create_vector(&tensor_metadata_offsets);
+        let operations_offset = builder.create_vector(&tensor_operation_offsets);
         TensorBuffersMetadata::create(builder, &TensorBuffersMetadataArgs {
             version: Some(version_offset),
             tensors: Some(tensors_offset),
+            operations: Some(operations_offset),
             ..Default::default()
         })
     }
@@ -133,20 +151,24 @@ mod tests {
     use super::*;
     use crate::{
         generated::tensor_buffers::TensorBuffersMetadata,
-        tensor_buffers_writer::TensorBuffersWrite, Tensor, TensorBuffersWriter,
+        tensor_buffers_writer::TensorBuffersWrite, Operation, Tensor, TensorBuffersWriter,
     };
 
     #[tokio::test]
     async fn test_tensor_buffers_reader() {
         // Create a test tensor.
-        let tensor = Tensor::new("1", &[1.0f32, 2.0, 3.0], vec![3]);
+        let tensor_1 = Tensor::new("1", &[1.0f32, 2.0, 3.0], vec![3]);
+        let tensor_2 = Tensor::new("2", &[1.0f32, 2.0, 3.0], vec![3]);
+        let tensor_operation1 = TensorOperation::new(1, Operation::None, vec![], tensor_1.id());
+        let tensor_operation2 =
+            TensorOperation::new(2, Operation::Add, vec![tensor_operation1.id()], tensor_2.id());
         let tmp = NamedTempFile::new().unwrap();
         let path = tmp.path().to_owned();
         let mut file = File::create(&path).await.unwrap();
 
-        // Write the tensor to the buffer.
+        // Write the tensor operation to the buffer.
         let mut writer = TensorBuffersWriter::new(&mut file);
-        writer.write_tensors(vec![tensor]).await.unwrap();
+        writer.write(vec![tensor_1], vec![tensor_operation1, tensor_operation2]).await.unwrap();
 
         // Reset file position for reading.
         let file = File::open(&path).await.unwrap();
@@ -162,6 +184,7 @@ mod tests {
         let tensor_buffers_metadata =
             flatbuffers::root::<TensorBuffersMetadata>(&metadata_buf).unwrap();
         assert_eq!(tensor_buffers_metadata.tensors().unwrap().len(), 1);
+
         // Read the tensor data using the metadata.
         let tensor_metadata = tensor_buffers_metadata.tensors().unwrap().get(0);
         let mut tensor_buf = vec![0; tensor_metadata.data_size() as usize];
@@ -169,5 +192,11 @@ mod tests {
         assert_eq!(tensor_buf.len(), 3 * std::mem::size_of::<f32>());
         let tensor_data = cast_slice::<u8, f32>(&tensor_buf);
         assert_eq!(tensor_data, &[1.0f32, 2.0, 3.0]);
+
+        // Read the tensor operation data using the metadata.
+        let tensor_operation_metadata = tensor_buffers_metadata.operations().unwrap().get(0);
+        assert!(tensor_operation_metadata.id() == 1);
+        assert!(tensor_operation_metadata.operation() == Operation::None);
+        assert!(tensor_operation_metadata.input_operations().unwrap().len() == 0);
     }
 }
